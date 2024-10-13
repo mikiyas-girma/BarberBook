@@ -64,7 +64,7 @@ export default function Hero() {
           <div className="flex items-center space-x-4">
             <Link to="#" className="text-gray-600 hover:text-gray-800">HOME</Link>
             <Link to="#" className="text-gray-600 hover:text-gray-800">ABOUT US</Link>
-            <Link to="#" className="text-gray-600 hover:text-gray-800">SERVICES</Link>
+            <Link to="/services" className="text-gray-600 hover:text-gray-800">SERVICES</Link>
             <Link to="#" className="text-gray-600 hover:text-gray-800">CONTACT</Link>
             <Button variant="outline" size="sm">
               BOOKING

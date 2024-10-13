@@ -1,15 +1,36 @@
-// src/App.tsx
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
+import './index.css'
+
+import {
+    createBrowserRouter,
+    RouterProvider
+} from 'react-router-dom'
+
+import routes from './routes'
+import Layout from './pages/Layout'
+import Page404 from '@/pages/Page404'
+import { ThemeProvider } from '@/components/theme-provider'
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Router>
-  );
+
+    const router = createBrowserRouter(
+        [
+            {
+                element: <Layout />,
+                errorElement: <Page404 />,
+
+                children: routes
+            }
+        ],
+        {
+            basename: '/'
+        }
+    )
+
+    return (
+        <ThemeProvider defaultTheme="dark" storageKey='vite-ui-theme'>
+            <RouterProvider router={router} />
+        </ThemeProvider>
+    )
 }
 
-export default App;
+export default App
