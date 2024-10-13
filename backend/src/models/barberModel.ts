@@ -68,7 +68,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
       default: null,
     },
   },
-  { timestamps: true } // Automatically add createdAt and updatedAt
+  { timestamps: true }
 );
 
 export const Barber = model<IBarber>("Barber", BarberSchema);
