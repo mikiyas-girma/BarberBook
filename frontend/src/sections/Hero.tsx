@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 
 const images = [
   "/images/barbershop1.jpg?height=1080&width=1920",
-  "/images/2.jpg?height=1080&width=1920",
-  "/images/3.jpg?height=1080&width=1920",
+//   "/images/2.jpg?height=1080&width=1920",
+//   "/images/3.jpg?height=1080&width=1920",
 ];
 
 export default function Hero() {
@@ -36,11 +36,11 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black bg-opacity-0" />
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
-        <main className="flex-grow flex items-center justify-center">
+        <main className="font-chakra flex-grow flex items-center justify-center">
           <div className="text-center text-white">
             <h1 className="text-5xl font-bold mb-4">Experience the traditional<br />barbershop feel</h1>
-            <p className="text-xl mb-8">Professional care to maintain your perfect look</p>
-            <div className="space-x-4">
+            <p className="text-2xl mb-8 font-space_grotesk">Professional care to maintain your perfect look</p>
+            <div className="space-x-4 font-merriweather">
               <Button variant="default" size="lg" className="bg-white text-black hover:bg-gray-200">
                 SEE MORE
               </Button>
