@@ -46,7 +46,7 @@ const Header = () => {
             <Link to="#" className="text-white hover:text-gray-300">
               CONTACT
             </Link>
-            <div className="booking-btn">
+            <div className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground">
               BOOKING
             </div>
           </div>
