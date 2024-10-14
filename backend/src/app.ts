@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import connectDB from './db/db.js';
 import authRoutes from './routes/authRoutes.js';
 import { globalErrorMiddleware } from './utils/errorMiddleware.js';
+import barbersRoutes from './routes/barbersRoute.js';
 
 
 const app: Application = express();
@@ -19,6 +20,9 @@ app.get('/', (_req, res) => {
 
 // auth routes
 app.use('/api/auth', authRoutes);
+
+// barbers routes
+app.use('/api/barbers', barbersRoutes);
 
 app.use(globalErrorMiddleware);
 
