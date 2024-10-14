@@ -44,6 +44,10 @@ const BarberSchema: Schema<IBarber> = new Schema(
           type: Boolean,
           default: false,
         },
+        _id: {
+          type: Schema.Types.ObjectId,
+          auto: true,
+        }
       },
     ],
     subscriptionStatus: {

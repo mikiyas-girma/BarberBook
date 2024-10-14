@@ -5,6 +5,7 @@ import connectDB from './db/db.js';
 import authRoutes from './routes/authRoutes.js';
 import { globalErrorMiddleware } from './utils/errorMiddleware.js';
 import barbersRoutes from './routes/barbersRoute.js';
+import cookieParser from 'cookie-parser';
 
 
 const app: Application = express();
@@ -12,6 +13,8 @@ const app: Application = express();
 // Middleware
 app.use(helmet());
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Routes
 app.get('/', (_req, res) => {

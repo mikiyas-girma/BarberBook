@@ -75,11 +75,7 @@ class AuthController {
       }
 
       //   generate token
-      const token = jwt.sign(
-        { userId: user._id },
-        process.env.JWT_SECRET as string,
-        { expiresIn: "24h" }
-      );
+      const token = jwt.sign({ userId: user._id },  process.env.JWT_SECRET!);
 
       Logger.info(`User ${user.email} signed up`);
       res.cookie("access_token", token, {
