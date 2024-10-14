@@ -128,9 +128,17 @@ class AuthController {
         return next(errorHandler(401, "Invalid email or password."));
       }
 
-      //   todo: generate token
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!);
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 3600000,
+        secure: process.env.NODE_ENV === "production",
+      });
 
-      res.status(200).json({ message: "Login successful", userId: user._id });
+      const { password: pass, ...theuser } = user.toObject();
+
+      res.status(200).json({ message: "Login successful", user: theuser });
     } catch (error) {
       next(errorHandler(500, "Server error during login."));
     }
