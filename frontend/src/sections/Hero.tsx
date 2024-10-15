@@ -3,8 +3,8 @@ import Header from "./Header";
 
 const images = [
 //   "/images/barbershop1.jpg?height=1080&width=1920",
-  "/images/2.jpg?height=1080&width=1920",
-//   "/images/3.jpg?height=1080&width=1920",
+//   "/images/2.jpg?height=1080&width=1920",
+  "/images/3.jpg?height=1080&width=1920",
 ];
 
 export default function Hero() {
@@ -37,13 +37,13 @@ export default function Hero() {
         <Header />
         <main className="font-chakra flex-grow flex items-center ml-12">
           <div className="text text-white">
-            <h1 className="text-5xl font-bold mb-4">Experience the <span className="">traditional</span><br />barbershop feel</h1>
+            <h1 className="text-6xl font-bold mb-4 text-[#F3C623] font-space_grotesk">Experience the <span className="text-[#F3C623]">traditional</span><br />barbershop feel</h1>
             <p className="text-2xl mb-8 font-space_grotesk">Professional care to maintain your perfect look</p>
             <div className="space-x-4 font-space_grotesk py-10">
               <div className="booking-btn h-12 bg-[#AF8447]">
                 SEE MORE
               </div>
-              <div className="booking-btn h-12 text-[#AF8447] bg-white hover:text-gray-800">
+              <div className="booking-btn h-12 text-[#493628] bg-white hover:text-gray-800">
                 BOOK NOW
               </div>
             </div>
