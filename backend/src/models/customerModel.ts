@@ -43,7 +43,7 @@ const CustomerSchema: Schema<ICustomer> = new Schema(
       },
     ],
   },
-  { timestamps: true } // Automatically add createdAt and updatedAt
+  { timestamps: true }
 );
 
 export const Customer = model<ICustomer>("Customer", CustomerSchema);

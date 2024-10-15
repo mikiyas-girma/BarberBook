@@ -44,6 +44,10 @@ const BarberSchema: Schema<IBarber> = new Schema(
           type: Boolean,
           default: false,
         },
+        _id: {
+          type: Schema.Types.ObjectId,
+          auto: true,
+        }
       },
     ],
     subscriptionStatus: {
@@ -68,7 +72,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
       default: null,
     },
   },
-  { timestamps: true } // Automatically add createdAt and updatedAt
+  { timestamps: true }
 );
 
 export const Barber = model<IBarber>("Barber", BarberSchema);

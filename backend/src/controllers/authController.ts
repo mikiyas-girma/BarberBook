@@ -1,8 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import bcrypt from 'bcryptjs';
-import { errorHandler } from '../utils/errorHandler.js';
-import { Customer } from '../models/customerModel.js';
-import { Barber } from '../models/barberModel.js';
+import { Request, Response, NextFunction } from "express";
+import bcrypt from "bcryptjs";
+import { errorHandler } from "../utils/errorHandler.js";
+import { Customer } from "../models/customerModel.js";
+import { Barber } from "../models/barberModel.js";
+import Logger from "../lib/logger.js";
+import jwt from "jsonwebtoken";
 
 class AuthController {
   // Signup for Customer or Barber
@@ -10,22 +12,30 @@ class AuthController {
     const { name, email, password, isBarber } = req.body;
 
     // Check for missing required fields
-    const missingFields = ['name', 'email', 'password'].filter(
+    const missingFields = ["name", "email", "password"].filter(
       (field) => !req.body[field]?.trim()
     );
     if (missingFields.length > 0) {
       return next(
-        errorHandler(400, `Missing required fields: ${missingFields.join(', ')}`)
+        errorHandler(
+          400,
+          `Missing required fields: ${missingFields.join(", ")}`
+        )
       );
     }
 
     try {
       // Check if the email already exists in Customer or Barber collection
+      if (isBarber) {
+        const existingBarber = await Barber.findOne({ email });
+        if (existingBarber) {
+          return next(errorHandler(409, "Email already in use."));
+        }
+      }
       const existingCustomer = await Customer.findOne({ email });
-      const existingBarber = await Barber.findOne({ email });
 
-      if (existingCustomer || existingBarber) {
-        return next(errorHandler(409, 'Email already in use.'));
+      if (existingCustomer) {
+        return next(errorHandler(409, "Email already in use."));
       }
 
       // Hash the password
@@ -34,13 +44,16 @@ class AuthController {
       let user;
       if (isBarber) {
         const { businessName, phoneNumber } = req.body;
-        const missingBarberFields = ['businessName', 'phoneNumber'].filter(
-            (field) => !req.body[field]?.trim()
-            );
+        const missingBarberFields = ["businessName", "phoneNumber"].filter(
+          (field) => !req.body[field]?.trim()
+        );
         if (missingBarberFields.length > 0) {
-            return next(
-                errorHandler(400, `Missing required fields: ${missingBarberFields.join(', ')}`)
-            );
+          return next(
+            errorHandler(
+              400,
+              `Missing required fields: ${missingBarberFields.join(", ")}`
+            )
+          );
         }
         // Barber registration with trial period
         user = await Barber.create({
@@ -49,7 +62,7 @@ class AuthController {
           password: hashedPassword,
           businessName,
           phoneNumber,
-          subscriptionStatus: 'trial',
+          subscriptionStatus: "trial",
           trialEndDate: new Date(new Date().setDate(new Date().getDate() + 30)), // 30-day free trial
         });
       } else {
@@ -61,12 +74,28 @@ class AuthController {
         });
       }
 
+      //   generate token
+      const token = jwt.sign({ userId: user._id },  process.env.JWT_SECRET!);
+
+      Logger.info(`User ${user.email} signed up`);
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 3600000 * 24, // 24 hours
+        secure: process.env.NODE_ENV === "production",
+      });
+
       res.status(201).json({
-        message: `Signup successful for ${isBarber ? 'Barber' : 'Customer'}`,
-        userId: user._id,
+        message: `Signup successful for ${isBarber ? "Barber" : "Customer"}`,
+        user: {
+          name: user.name,
+          email: user.email,
+          isBarber,
+        },
       });
     } catch (error) {
-      next(errorHandler(500, 'Server error during signup.'));
+      Logger.error(`Error signing up: ${error}`);
+      next(errorHandler(500, "Server error during signup."));
     }
   }
 
@@ -75,7 +104,7 @@ class AuthController {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return next(errorHandler(400, 'Email and password are required.'));
+      return next(errorHandler(400, "Email and password are required."));
     }
 
     try {
@@ -86,20 +115,28 @@ class AuthController {
       }
 
       if (!user) {
-        return next(errorHandler(404, 'User not found.'));
+        return next(errorHandler(404, "User not found."));
       }
 
       // Compare the passwords
       const isPasswordMatch = await bcrypt.compare(password, user.password);
       if (!isPasswordMatch) {
-        return next(errorHandler(401, 'Invalid email or password.'));
+        return next(errorHandler(401, "Invalid email or password."));
       }
 
-    //   todo: generate token
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!);
+      res.cookie("access_token", token, {
+        httpOnly: true,
+        sameSite: "lax",
+        maxAge: 3600000,
+        secure: process.env.NODE_ENV === "production",
+      });
 
-      res.status(200).json({ message: 'Login successful', userId: user._id });
+      const { password: pass, ...theuser } = user.toObject();
+
+      res.status(200).json({ message: "Login successful", user: theuser });
     } catch (error) {
-      next(errorHandler(500, 'Server error during login.'));
+      next(errorHandler(500, "Server error during login."));
     }
   }
 }

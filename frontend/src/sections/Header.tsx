@@ -31,7 +31,10 @@ const Header = () => {
       <nav className="bg-transparent text-white font-merriweather">
         <div className="px-4 py-4 mx-12 flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold">
-            BARBERBOOK
+            <span>
+                <img src="/logo.svg" alt="barberbook logo" className="h-10 w-10"
+                />
+            </span> BARBERBOOK
           </Link>
           <div className="flex items-center space-x-4">
             <Link to="#" className="text-white hover:text-gray-300">
