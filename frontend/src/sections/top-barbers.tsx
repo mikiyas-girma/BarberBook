@@ -41,7 +41,7 @@ export default function TopBarbers() {
             <GrNext color="#FFBF00" size={24}/>
           </div>
         </div>
-        <div className="booking-btn h-11 ml-14 rounded mt-4 bg-amber-600 hover:bg-amber-500 text-black text-xl">
+        <div className="booking-btn h-11 ml-14 rounded mt-4 bg-amber-600 hover:bg-amber-700 text text-xl">
                 View All Our Barbers
         </div>
       </div>
