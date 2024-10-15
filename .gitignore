@@ -7,3 +7,5 @@ dist/
 .vscode/
 .idea/
 vs-workspaces/
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 
 
 export default function About() {
@@ -22,9 +21,9 @@ export default function About() {
               save time and avoid waiting in line.
             </p>
           </div>
-          <Button className="mt-4 bg-amber-500 hover:bg-amber-600 text-black">
-                Book With Your Best Barber Now
-          </Button>
+          <div className="booking-btn h-11 rounded mt-4 bg-amber-500 hover:bg-amber-600 text-black text-xl">
+                View All Our Barbers
+          </div>
         </div>
         <div>
           <div className="w-96 h-96 rounded-lg overflow-hidden mt-4">
