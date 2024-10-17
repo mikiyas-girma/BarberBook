@@ -3,6 +3,7 @@ import Hero from '@/sections/Hero';
 import About from '@/sections/About';
 import TopBarbers from '@/sections/top-barbers';
 import Testimonials from '@/sections/testimonials';
+import LatestStyles from '@/sections/latest-styles';
 
 const Home: React.FC = () => {
     return (
@@ -11,6 +12,7 @@ const Home: React.FC = () => {
             <About />
             <TopBarbers />
             <Testimonials />
+            <LatestStyles />
         </div>
     );
 };
