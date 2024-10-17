@@ -1,8 +1,9 @@
-import { Document, Schema } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
 
 // Define an interface for Customer
 export interface ICustomer extends Document {
+    _id: Types.ObjectId;
     name: string;
     email: string;
     password: string;
