@@ -4,6 +4,7 @@ import About from '@/sections/About';
 import TopBarbers from '@/sections/top-barbers';
 import Testimonials from '@/sections/testimonials';
 import LatestStyles from '@/sections/latest-styles';
+import Footer from '@/sections/Footer';
 
 const Home: React.FC = () => {
     return (
@@ -13,6 +14,7 @@ const Home: React.FC = () => {
             <TopBarbers />
             <Testimonials />
             <LatestStyles />
+            <Footer />
         </div>
     );
 };
