@@ -38,7 +38,8 @@ const Header = () => {
   };
   return (
     <>
-      <header className="bg-transparent text-white font-chakra">
+    <div className="bg-transparent">
+      <header className="text-white font-chakra bg-transparent">
         <div
           className="mx-auto px-4 py-4 flex items-center
              border-b-2 border-white border-opacity-25"
@@ -94,6 +95,7 @@ const Header = () => {
           </div>
         </div>
       </nav>
+      </div>
     </>
   );
 };
