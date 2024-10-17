@@ -1,9 +1,20 @@
 import { LuFacebook, LuTwitter, LuInstagram } from 'react-icons/lu'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { useEffect } from "react";
+
 
 export default function Footer() {
+    useEffect(() => {
+        const hash = window.location.hash;
+        if (hash) {
+          const element = document.getElementById(hash.substring(1));
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }, []);
   return (
-    <footer className="bg-black text-white font-merriweather py-12 px-4 sm:px-6 lg:px-8">
+    <footer id='footer' className="bg-black text-white font-merriweather py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           <div className="col-span-1 md:col-span-2">

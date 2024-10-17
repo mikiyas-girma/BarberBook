@@ -1,12 +1,11 @@
 
-
 export default function About() {
   return (
     <>
-    <div className="bg-[#1f1f1f] font-merriweather my-10">
+    <div id="about" className="bg-[#1f1f1f] font-merriweather my-10">
       <div className="max-w-screen-lg m-auto flex items-center gap-10 py-10">
         <div>
-          <div className="text-4xl my-8 font-chakra">About Us</div>
+          <div id="about" className="text-4xl my-8 font-chakra">About Us</div>
           <div className="flex flex-col items-center gap-y-8 w-[60%]">
             <p>
               Welcome to Barberbook, the traditional barbershop experience. We
