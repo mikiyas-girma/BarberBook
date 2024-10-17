@@ -21,7 +21,7 @@ const cards = [
   },
   {
     id: 2,
-    className: "m-auto card w-80 h-64 rounded-md",
+    className: "m-auto card w-96 md:w-80 h-64 rounded-md",
     thumbnail:
       "/images/image5.jpg",
   },
@@ -39,7 +39,7 @@ const cards = [
   },
   {
     id: 5,
-    className: "m-auto w-80 h-64 rounded-md",
+    className: "m-auto w-96 md:w-80 h-64 rounded-md",
     thumbnail:
       "/images/image5.jpg",
   },
