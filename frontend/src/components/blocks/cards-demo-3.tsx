@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 export function CardDemo() {
   return (
@@ -22,9 +23,9 @@ export function CardDemo() {
           </div>
         </div>
         <div className="flex justify-center absolute bottom-0 right-1">
-          <p className="font-normal border-amber-500 hover:bg-amber-600 text-sm text-gray-50 border inline-flex px-4 py-2 z-10 my-4">
+          <Link to={'/booking'} className="font-normal border-amber-500 hover:bg-amber-600 text-sm text-gray-50 border inline-flex px-4 py-2 z-10 my-4">
             Book Now
-          </p>
+          </Link>
         </div>
       </div>
     </div>
