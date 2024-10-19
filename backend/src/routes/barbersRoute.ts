@@ -13,18 +13,21 @@ router.get('/', BarberController.getAllBarbers);
 router.get("/weekly-schedule", authMiddleware, isBarber, BarberController.getWeeklySchedule);
 // route for listing the barbers booking
 router.get('/bookings',authMiddleware, isBarber, BarberController.viewBookings);
-// routes for getting barber by id
-router.get('/:id', BarberController.getBarberById);
 
 // routes for adding availability slots
 router.post('/availability',authMiddleware, BarberController.addAvailability);
 
+// routes for getting portfolios
+router.get('/portfolios/:barberId', PortfolioController.getPortfolios);
+
 // routes for uploading portfolios
 router.post('/portfolios', authMiddleware, 
-            isBarber, upload.array("images", 10), 
-            uploadToCloudinary, 
-            PortfolioController.uploadPortfolios);
-
-
+    isBarber, upload.array("images", 10), 
+    uploadToCloudinary, 
+    PortfolioController.uploadPortfolios);
+    
+// routes for getting barber by id
+router.get('/:id', BarberController.getBarberById);
+    
 
 export default router;
