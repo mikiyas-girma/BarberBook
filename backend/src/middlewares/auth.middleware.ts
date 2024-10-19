@@ -31,14 +31,20 @@ export const authMiddleware = async (
           return next(errorHandler(401, 'Cannot authentify user'));
         }
         try {
-          const user = await Barber.findOne({ _id: decoded.id }).select('-password');
-          if (!user) {
-            return next(errorHandler(401, 'Unknow user or invalid auth token'));
+          let barber = await Barber.findOne({ _id: decoded.id }).select('-password');
+          if (barber) {
+            const barberObject: IBarber = barber.toObject();
+            req.user = barberObject;
+            req.userType = 'barber';
+          } else {
+            let customer = await Customer.findOne({ _id: decoded.id }).select('-password');
+            if (!customer) {
+              return next(errorHandler(401, 'Unknown user or invalid auth token'));
+            }
+            const customerObject: ICustomer = customer.toObject();
+            req.user = customerObject;
+            req.userType = 'customer';
           }
-
-          const userObject: IBarber = user.toObject();
-          req.user = userObject;
-          req.userType = 'barber';
           return next();
         } catch (error) {
           return next(errorHandler(401, 'Cannot authentify user'));

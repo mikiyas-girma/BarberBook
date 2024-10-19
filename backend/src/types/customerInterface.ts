@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-export interface IBooking {
+export interface IAppointment {
   barberId: Types.ObjectId;
   date: Date;
   time: string;
@@ -13,5 +13,5 @@ export interface ICustomer {
   email: string;
   password: string;
   phoneNumber?: string;
-  bookings: IBooking[];
+  bookings: IAppointment[];
 }
