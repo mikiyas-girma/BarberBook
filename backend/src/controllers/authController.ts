@@ -9,10 +9,10 @@ import jwt from "jsonwebtoken";
 class AuthController {
   // Signup for Customer or Barber
   static async signup(req: Request, res: Response, next: NextFunction) {
-    const { name, email, password, isBarber } = req.body;
+    const { name, email, password, phoneNumber, isBarber } = req.body;
 
     // Check for missing required fields
-    const missingFields = ["name", "email", "password"].filter(
+    const missingFields = ["name", "email", "password", "phoneNumber"].filter(
       (field) => !req.body[field]?.trim()
     );
     if (missingFields.length > 0) {
@@ -70,6 +70,7 @@ class AuthController {
         user = await Customer.create({
           name,
           email,
+          phoneNumber,
           password: hashedPassword,
         });
       }
@@ -90,6 +91,7 @@ class AuthController {
         user: {
           name: user.name,
           email: user.email,
+          phoneNumber: user.phoneNumber,
           isBarber,
         },
       });

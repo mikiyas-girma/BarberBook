@@ -19,12 +19,17 @@ const CustomerSchema: Schema<ICustomer> = new Schema(
     },
     phoneNumber: {
       type: String,
+      required: true,
     },
     bookings: [
       {
         barberId: {
           type: Schema.Types.ObjectId,
           ref: "Barber", // Reference to the Barber model
+          required: true,
+        },
+        slotId: {
+          type: Schema.Types.ObjectId,
           required: true,
         },
         date: {

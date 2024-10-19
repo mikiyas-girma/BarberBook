@@ -1,43 +1,50 @@
 import { Barber } from "../models/barberModel.js";
-import { IBarber, IAvailabilitySlot } from "../types/barberInterface.js";
+import { IBarber, IAvailableSlot } from "../types/barberInterface.js";
 import { Types } from "mongoose";
-import { errorHandler } from '../utils/errorHandler.js';
-
+import { errorHandler } from "../utils/errorHandler.js";
 
 class BarberService {
-  // Add availability slot for a barber
+
   static async addAvailabilitySlots(
     barberId: string,
-    availableSlots: { date: string, time: string }[]
-  ): Promise<IAvailabilitySlot[]> {
-    if (!Types.ObjectId.isValid(barberId)) {
-      throw new Error("Invalid Barber ID");
-    }
-
+    availableSlots: IAvailableSlot[]
+  ) {
     const barber = await Barber.findById(barberId);
 
-  if (!barber) {
-    throw errorHandler(404, 'Barber not found');
-  }
+    if (!barber) {
+      throw new Error("Barber not found");
+    }
 
-  // Ensure availableSlots is a valid array
-  if (!Array.isArray(availableSlots) || availableSlots.length === 0) {
-    throw errorHandler(400, 'Available slots must be an array and cannot be empty');
-  }
+    // Iterate over the incoming slots
+    for (const newSlot of availableSlots) {
+    // Check if the barber already has slots for the given date
+    const existingSlot = barber.availableSlots.find(
+      (slot) =>
+        new Date(slot.date).toISOString().slice(0, 10) ===
+        new Date(newSlot.date).toISOString().slice(0, 10)
+    );
 
-  // Loop through each slot and add to the barber's available slots
-  availableSlots.forEach((slot: { date: string; time: string }) => {
-    barber.availableSlots.push({
-      date: new Date(slot.date), // Convert string to Date object
-      time: slot.time,
-      isBooked: false, // Default to false
-    });
-  });
+      if (existingSlot) {
+        // If the date exists, merge the times
+        existingSlot.times = [
+          ...existingSlot.times,
+          ...newSlot.times.filter(
+            (newTime) =>
+              !existingSlot.times.some(
+                (existingTime) => existingTime.time === newTime.time
+              )
+          ),
+        ];
+      } else {
+        // If the date doesn't exist, add the entire new slot
+        barber.availableSlots.push(newSlot);
+      }
+    }
 
-  // Save the updated barber document with new slots
-  await barber.save();
+    // Save the updated barber document
+    await barber.save();
 
-  return barber.availableSlots;
+    return barber.availableSlots;
   }
 
   // Delete a specific availability slot
