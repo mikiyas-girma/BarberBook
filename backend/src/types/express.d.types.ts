@@ -14,7 +14,7 @@ export interface RUser {
 declare global {
   namespace Express {
     interface Request {
-      user: IBarber;
+      user: IBarber | ICustomer;
     }
   }
 }
