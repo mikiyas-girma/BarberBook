@@ -19,6 +19,7 @@ const CustomerSchema: Schema<ICustomer> = new Schema(
     },
     phoneNumber: {
       type: String,
+      required: true,
     },
     bookings: [
       {

@@ -40,7 +40,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
         times: [
           {
             time: {
-              type: String, // e.g., "09:00 AM", "01:30 PM"
+              type: String,
               required: true,
             },
             isBooked: {
@@ -53,6 +53,45 @@ const BarberSchema: Schema<IBarber> = new Schema(
             },
           },
         ],
+      },
+    ],
+    bookings: [
+      {
+        customerDetails: {
+            customerId: {
+                type: Schema.Types.ObjectId,
+                required: false,
+            },
+            name: {
+                type: String,
+                required: true,
+            },
+            email: {
+                type: String,
+                required: false,
+            },
+            phoneNumber: {
+                type: String,
+                required: true,
+            },
+            isCustomer: {
+                type: Boolean,
+                required: true,
+            },
+        },
+        date: {
+          type: Date,
+          required: true,
+        },
+        time: {
+          type: String,
+          required: true,
+        },
+        status: {
+          type: String,
+          enum: ["pending", "completed", "cancelled"],
+          default: "pending",
+        },
       },
     ],
     subscriptionStatus: {
@@ -69,7 +108,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
       type: Date,
       default: () => {
         const currentDate = new Date();
-        return new Date(currentDate.setDate(currentDate.getDate() + 30)); // Trial period is 30 days
+        return new Date(currentDate.setDate(currentDate.getDate() + 30));
       },
     },
     subscriptionEndDate: {

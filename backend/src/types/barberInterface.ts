@@ -11,6 +11,19 @@ export interface IAvailableSlot {
   times: ITimeSlot[];
 }
 
+export interface IBooking {
+    customerDetails: {
+        customerId: Types.ObjectId;
+        name: string;
+        email: string;
+        phoneNumber: string;
+        isCustomer: boolean;
+    }
+    date: Date;
+    time: string;
+    status: "pending" | "completed" | "cancelled";
+}
+
 export interface IBarber {
   _id: Types.ObjectId;
   name: string;
@@ -20,6 +33,7 @@ export interface IBarber {
   phoneNumber: string;
   portfolio: string[];
   availableSlots: IAvailableSlot[];
+  bookings: IBooking[];
   subscriptionStatus: "active" | "inactive" | "trial";
   subscriptionPlan: "monthly" | "yearly" | null;
   trialEndDate: Date;

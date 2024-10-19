@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { Barber } from "../../models/barberModel.js";
 import { Customer } from "../../models/customerModel.js";
 import { errorHandler } from "../../utils/errorHandler.js";
+import { IBooking } from "../../types/customerInterface.js";
+
 
 class AppointmentController {
   static async bookAppointment(
@@ -10,23 +12,23 @@ class AppointmentController {
     next: NextFunction
   ): Promise<void> {
     const { barberId, date, time, customerDetails } = req.body;
-    const customerId = req.user?._id; // Optional customer ID from req.user (if logged in)
+    const customerId = req.user?._id;
 
     try {
-      // 1. Validate request data
+      // Validate request data
       if (!barberId || !date || !time) {
         return next(
           errorHandler(400, "Barber ID, date, and time are required.")
         );
       }
 
-      // 2. Find the barber by ID
+      // Find the barber by ID
       const barber = await Barber.findById(barberId);
       if (!barber) {
         return next(errorHandler(404, "Barber not found."));
       }
 
-      // 3. Find the requested slot in the barber's availability
+      // Find the requested slot in the barber's availability
       const availability = barber.availableSlots.find(
         (slot) => slot.date.toISOString() === new Date(date).toISOString()
       );
@@ -45,32 +47,36 @@ class AppointmentController {
         );
       }
 
-      // 4. Handle customer-specific booking logic
+      // Create the booking object
       let booking;
       if (customerId) {
-        // If the user is authenticated
         const customer = await Customer.findById(customerId);
         if (!customer) {
           return next(errorHandler(404, "Customer not found."));
         }
 
         // Add booking to the authenticated customer's profile
-        customer.bookings.push({
+        const customerBooking: IBooking = {
           barberId,
           date: new Date(date),
           time,
           status: "pending",
-        });
+        };
+        customer.bookings.push(customerBooking);
         await customer.save();
+
+        // Prepare booking for response and barber's booking
         booking = {
           barberId,
           date,
           time,
           status: "pending",
-          customer: customer.name,
+          customerName: customer.name, // Get customer name
+          phoneNumber: customer.phoneNumber,
+          email: customer?.email,
         };
       } else {
-        // If the user is not authenticated, customer details must be provided
+        // Guest booking logic
         if (
           !customerDetails ||
           !customerDetails.name ||
@@ -84,26 +90,39 @@ class AppointmentController {
           );
         }
 
-        // Handle guest booking logic (not saved under any customer profile)
         booking = {
           barberId,
           date,
           time,
           status: "pending",
-          customer: customerDetails.name,
+          customerName: customerDetails.name, // Store guest name
+          phoneNumber: customerDetails.phoneNumber,
+          email: customerDetails?.email,
         };
       }
 
-      // 5. If everything is successful, mark the slot as booked
-      slotTime.isBooked = true;
+      // Save booking to the barber's profile
+      barber.bookings.push({
+        customerDetails: {
+            customerId,
+            name: booking.customerName,
+            phoneNumber: customerId ? req.user.phoneNumber : customerDetails.phoneNumber,
+            email: customerId ? req.user.email : customerDetails?.email,
+            isCustomer: customerId ? true : false,
+        },
+        date: new Date(date),
+        time,
+        status: "pending",
+      });
+      slotTime.isBooked = true; // Mark the slot as booked
       await barber.save();
 
-      // 6. Respond with booking confirmation
-    res.status(201).json({
+      // Respond with booking confirmation
+      res.status(201).json({
         message: "Appointment booked successfully",
         booking,
       });
-    return;
+      return;
     } catch (error) {
       return next(errorHandler(500, `Internal Server Error ${error}`));
     }
