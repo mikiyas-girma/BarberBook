@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { errorHandler } from "../../utils/errorHandler.js";
 import { Barber } from "../../models/barberModel.js";
 import BarberService from "../../services/barberService.js";
+import Logger from "../../lib/logger.js";
 
 class BarberController {
   static async getAllBarbers(req: Request, res: Response, next: NextFunction) {
@@ -89,6 +90,48 @@ class BarberController {
       });
     } catch (error) {
       return next(error); // Pass error to next middleware for centralized error handling
+    }
+  }
+
+  static async viewBookings(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const barberId = req.user?._id; // Assuming the logged-in barber's ID is stored in req.user
+
+    try {
+      // Validate that the user is authenticated and is a barber
+      if (!barberId) {
+        return next(
+          errorHandler(401, "Unauthorized access. Please log in as a barber.")
+        );
+      }
+
+      // Find the barber and populate their bookings
+      const barber = await Barber.findById(barberId)
+        .select("bookings")
+        .populate({
+          path: "bookings.customerDetails.customerId", // Populate the customer details for each booking
+          select: "name email phoneNumber", // Select relevant fields from the customer
+        });
+
+      if (!barber) {
+        return next(errorHandler(404, "Barber not found."));
+      }
+
+      // Sort the bookings by date and time (upcoming first)
+      const sortedBookings = barber.bookings.sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        const timeA = a.time.localeCompare(b.time); // String comparison for time (e.g., "09:00 AM")
+        return dateA - dateB || timeA;
+      });
+
+      // Respond with the barber's bookings
+      res.status(200).json({
+        message: "Bookings retrieved successfully",
+        bookings: sortedBookings,
+      });
+    } catch (error) {
+        Logger.error(error);
+      return next(errorHandler(500, "Internal Server Error"));
     }
   }
 }

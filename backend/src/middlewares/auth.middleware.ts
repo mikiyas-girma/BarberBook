@@ -38,7 +38,7 @@ export const authMiddleware = async (
 
           const userObject: IBarber = user.toObject();
           req.user = userObject;
-
+          req.userType = 'barber';
           return next();
         } catch (error) {
           return next(errorHandler(401, 'Cannot authentify user'));
