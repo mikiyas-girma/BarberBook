@@ -2,6 +2,8 @@ import express from 'express';
 import BarberController from '../controllers/barbers/barberController.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { isBarber } from '../middlewares/isBarber.middleware.js';
+import PortfolioController from '../controllers/barbers/portfolioController.js';
+import { upload, uploadToCloudinary } from '../middlewares/fileUpload.middleware.js';
 
 const router = express.Router();
 
@@ -16,6 +18,12 @@ router.get('/:id', BarberController.getBarberById);
 
 // routes for adding availability slots
 router.post('/availability',authMiddleware, BarberController.addAvailability);
+
+// routes for uploading portfolios
+router.post('/portfolios', authMiddleware, 
+            isBarber, upload.array("images", 10), 
+            uploadToCloudinary, 
+            PortfolioController.uploadPortfolios);
 
 
 
