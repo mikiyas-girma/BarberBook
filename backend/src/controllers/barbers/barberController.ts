@@ -4,6 +4,7 @@ import { Barber } from "../../models/barberModel.js";
 import BarberService from "../../services/barberService.js";
 import Logger from "../../lib/logger.js";
 import { IBooking } from "../../types/barberInterface.js";
+import { addDays, startOfDay, endOfDay } from "date-fns";
 
 class BarberController {
   static async getAllBarbers(req: Request, res: Response, next: NextFunction) {
@@ -152,7 +153,6 @@ class BarberController {
         return dateA - dateB || timeA;
       });
 
-
       // Pagination logic
       const currentPage = parseInt(page as string, 10);
       const perPage = parseInt(limit as string, 10);
@@ -175,6 +175,52 @@ class BarberController {
     } catch (error: any) {
       console.error("Error in viewBookings:", error);
       res.status(500).json({ message: "Server error", error: error.message });
+      return;
+    }
+  }
+
+  // Get barber's weekly schedule
+  static async getWeeklySchedule(req: Request, res: Response): Promise<void> {
+    try {
+      const barberId = req.user._id; // Assuming the barber is logged in
+
+      if (!barberId) {
+        res
+          .status(401)
+          .json({ message: "Unauthorized access. Please log in as a barber." });
+        return;
+      }
+
+      // Get the current date and 7 days from now
+      const today = new Date();
+      const weekFromNow = addDays(today, 7);
+
+      // Find the barber and retrieve available slots
+      const barber = await Barber.findById(barberId);
+
+      if (!barber) {
+        res.status(404).json({ message: "Barber not found." });
+        return;
+      }
+
+      // Filter available slots for the next 7 days
+      const weeklySchedule = barber.availableSlots.filter((slot) => {
+        const slotDate = new Date(slot.date);
+        return slotDate >= startOfDay(today) && slotDate <= endOfDay(weekFromNow);
+      });
+
+      // Return the weekly schedule
+      res.status(200).json({
+        message: "Weekly schedule retrieved successfully",
+        schedule: weeklySchedule,
+      });
+      return;
+    } catch (error: any) {
+      console.error("Error in getWeeklySchedule:", error);
+      res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
       return;
     }
   }
