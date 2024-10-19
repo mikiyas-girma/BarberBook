@@ -7,6 +7,8 @@ import { globalErrorMiddleware } from './middlewares/error.middleware.js';
 import barbersRoutes from './routes/barbersRoute.js';
 import cookieParser from 'cookie-parser';
 import morganMiddleware from './middlewares/morgan.middleware.js';
+import appointmentRoutes from './routes/appointmentRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
 
 const app: Application = express();
 
@@ -27,6 +29,12 @@ app.use('/api/auth', authRoutes);
 
 // barbers routes
 app.use('/api/barbers', barbersRoutes);
+
+// appointment routes
+app.use('/api/customer', customerRoutes);
+
+// appointment routes
+app.use('/api/appointment', appointmentRoutes);
 
 app.use(globalErrorMiddleware);
 

@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IBarber } from "../types/barberInterface.js";
+
 // Define the schema for Barber
 const BarberSchema: Schema<IBarber> = new Schema(
   {
@@ -27,7 +28,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
     },
     portfolio: [
       {
-        type: String, // URLs to images showcasing the barber's work
+        type: String,
       },
     ],
     availableSlots: [
@@ -36,18 +37,65 @@ const BarberSchema: Schema<IBarber> = new Schema(
           type: Date,
           required: true,
         },
+        times: [
+          {
+            time: {
+              type: String,
+              required: true,
+            },
+            isBooked: {
+              type: Boolean,
+              default: false,
+            },
+            _id: {
+              type: Schema.Types.ObjectId,
+              auto: true,
+            },
+          },
+        ],
+      },
+    ],
+    bookings: [
+      {
+        customerDetails: {
+            customerId: {
+                type: Schema.Types.ObjectId,
+                required: false,
+            },
+            name: {
+                type: String,
+                required: true,
+            },
+            email: {
+                type: String,
+                required: false,
+            },
+            phoneNumber: {
+                type: String,
+                required: true,
+            },
+            isCustomer: {
+                type: Boolean,
+                required: true,
+            },
+        },
+        date: {
+          type: Date,
+          required: true,
+        },
         time: {
           type: String,
           required: true,
         },
-        isBooked: {
-          type: Boolean,
-          default: false,
-        },
-        _id: {
+        slotId: {
           type: Schema.Types.ObjectId,
-          auto: true,
-        }
+          required: true,
+        },
+        status: {
+          type: String,
+          enum: ["pending", "completed", "cancelled"],
+          default: "pending",
+        },
       },
     ],
     subscriptionStatus: {
@@ -64,8 +112,8 @@ const BarberSchema: Schema<IBarber> = new Schema(
       type: Date,
       default: () => {
         const currentDate = new Date();
-        return new Date(currentDate.setDate(currentDate.getDate() + 30)); // Trial period is 30 days
-      }
+        return new Date(currentDate.setDate(currentDate.getDate() + 30));
+      },
     },
     subscriptionEndDate: {
       type: Date,
