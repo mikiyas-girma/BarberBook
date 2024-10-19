@@ -3,6 +3,7 @@ import { errorHandler } from "../../utils/errorHandler.js";
 import { Barber } from "../../models/barberModel.js";
 import BarberService from "../../services/barberService.js";
 import Logger from "../../lib/logger.js";
+import { IBooking } from "../../types/barberInterface.js";
 
 class BarberController {
   static async getAllBarbers(req: Request, res: Response, next: NextFunction) {
@@ -93,45 +94,88 @@ class BarberController {
     }
   }
 
-  static async viewBookings(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const barberId = req.user?._id; // Assuming the logged-in barber's ID is stored in req.user
-
+  static async viewBookings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
-      // Validate that the user is authenticated and is a barber
+      const barberId = req.user._id;
+
       if (!barberId) {
-        return next(
-          errorHandler(401, "Unauthorized access. Please log in as a barber.")
+        res
+          .status(401)
+          .json({ message: "Unauthorized access. Please log in as a barber." });
+        return;
+      }
+
+      // Get query parameters for filtering
+      const { date, status, page = 1, limit = 10 } = req.query;
+
+      // Fetch barber's bookings with filters and pagination
+      const barber = await Barber.findById(barberId)
+        .populate({
+          path: "bookings.customerDetails.customerId",
+          select: "name email phoneNumber",
+        })
+        .exec();
+
+      if (!barber) {
+        res.status(404).json({ message: "Barber not found." });
+        return;
+      }
+
+      // Apply filtering on the bookings array
+      let filteredBookings = barber.bookings;
+
+      // Filter by date if provided
+      if (date) {
+        const targetDate = new Date(date as string);
+        filteredBookings = filteredBookings.filter(
+          (booking: IBooking) =>
+            new Date(booking.date).toDateString() === targetDate.toDateString()
         );
       }
 
-      // Find the barber and populate their bookings
-      const barber = await Barber.findById(barberId)
-        .select("bookings")
-        .populate({
-          path: "bookings.customerDetails.customerId", // Populate the customer details for each booking
-          select: "name email phoneNumber", // Select relevant fields from the customer
-        });
-
-      if (!barber) {
-        return next(errorHandler(404, "Barber not found."));
+      // Filter by status if provided
+      if (status) {
+        filteredBookings = filteredBookings.filter(
+          (booking: IBooking) => booking.status === status
+        );
       }
 
-      // Sort the bookings by date and time (upcoming first)
-      const sortedBookings = barber.bookings.sort((a, b) => {
+      // Sort bookings by date and time
+      filteredBookings = filteredBookings.sort((a, b) => {
         const dateA = new Date(a.date).getTime();
         const dateB = new Date(b.date).getTime();
-        const timeA = a.time.localeCompare(b.time); // String comparison for time (e.g., "09:00 AM")
+        const timeA = a.time.localeCompare(b.time);
         return dateA - dateB || timeA;
       });
 
-      // Respond with the barber's bookings
+
+      // Pagination logic
+      const currentPage = parseInt(page as string, 10);
+      const perPage = parseInt(limit as string, 10);
+      const totalBookings = filteredBookings.length;
+      const totalPages = Math.ceil(totalBookings / perPage);
+      const paginatedBookings = filteredBookings.slice(
+        (currentPage - 1) * perPage,
+        currentPage * perPage
+      );
+
+      // Respond with filtered bookings
       res.status(200).json({
         message: "Bookings retrieved successfully",
-        bookings: sortedBookings,
+        bookings: paginatedBookings,
+        totalBookings,
+        currentPage,
+        totalPages,
       });
-    } catch (error) {
-        Logger.error(error);
-      return next(errorHandler(500, "Internal Server Error"));
+      return;
+    } catch (error: any) {
+      console.error("Error in viewBookings:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+      return;
     }
   }
 }
