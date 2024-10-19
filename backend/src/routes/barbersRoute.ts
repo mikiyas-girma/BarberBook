@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', BarberController.getAllBarbers);
 // Route for retrieving weekly schedule for the logged-in barber
 router.get("/weekly-schedule", authMiddleware, isBarber, BarberController.getWeeklySchedule);
-// Barber bookings route
+// route for listing the barbers booking
 router.get('/bookings',authMiddleware, isBarber, BarberController.viewBookings);
 // routes for getting barber by id
 router.get('/:id', BarberController.getBarberById);

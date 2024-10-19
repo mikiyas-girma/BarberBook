@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import { Barber } from "../../models/barberModel.js";
 import { Customer } from "../../models/customerModel.js";
 import { errorHandler } from "../../utils/errorHandler.js";
-import { IBooking } from "../../types/customerInterface.js";
+import { IAppointment } from "../../types/customerInterface.js";
+import { IBooking } from "../../types/barberInterface.js";
+import mongoose from "mongoose";
+import { Types } from "mongoose";
 
 
 class AppointmentController {
@@ -32,12 +35,12 @@ class AppointmentController {
       const availability = barber.availableSlots.find(
         (slot) => slot.date.toISOString() === new Date(date).toISOString()
       );
-
+      
       if (!availability) {
-        return next(errorHandler(400, "No availability on the selected date."));
-      }
-
-      const slotTime = availability.times.find((t) => t.time === time);
+          return next(errorHandler(400, "No availability on the selected date."));
+        }
+        
+        const slotTime = availability.times.find((t) => t.time === time);
       if (!slotTime || slotTime.isBooked) {
         return next(
           errorHandler(
@@ -56,8 +59,9 @@ class AppointmentController {
         }
 
         // Add booking to the authenticated customer's profile
-        const customerBooking: IBooking = {
+        const customerBooking: IAppointment = {
           barberId,
+          slotId: slotTime._id,
           date: new Date(date),
           time,
           status: "pending",
@@ -68,6 +72,7 @@ class AppointmentController {
         // Prepare booking for response and barber's booking
         booking = {
           barberId,
+          slotId: slotTime._id,
           date,
           time,
           status: "pending",
@@ -92,6 +97,7 @@ class AppointmentController {
 
         booking = {
           barberId,
+          slotId: slotTime._id,
           date,
           time,
           status: "pending",
@@ -103,6 +109,7 @@ class AppointmentController {
 
       // Save booking to the barber's profile
       barber.bookings.push({
+        _id: new mongoose.Types.ObjectId(),
         customerDetails: {
             customerId,
             name: booking.customerName,
@@ -112,6 +119,7 @@ class AppointmentController {
         },
         date: new Date(date),
         time,
+        slotId: slotTime._id,
         status: "pending",
       });
       slotTime.isBooked = true; // Mark the slot as booked
@@ -127,6 +135,85 @@ class AppointmentController {
       return next(errorHandler(500, `Internal Server Error ${error}`));
     }
   }
+
+  static async cancelAppointment(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user._id;
+      const { slotId } = req.params;
+
+      // Find the barber who has this booking
+    const barber = await Barber.findOne({
+      "bookings.slotId": slotId
+    });
+      if (!barber) {
+        res.status(404).json({ message: "Appointment not found." });
+        return;
+      }
+
+      // Find the specific booking
+      const booking = barber.bookings.find((b) => b.slotId.equals(slotId));
+
+      if (!booking) {
+        res.status(404).json({ message: "Booking not found." });
+        return;
+      }
+
+      // Check if the logged-in user is authorized (either the customer or the barber)
+      const isCustomer = booking.customerDetails.customerId.equals(userId);
+      const isBarber = barber._id.equals(userId);
+
+      if (!isCustomer && !isBarber) {
+        res.status(403).json({ message: "Unauthorized to cancel this booking." });
+        return;
+      }
+
+      // Update the booking status to "cancelled"
+      booking.status = "cancelled";
+
+      // Make the time slot available again
+      const slotDate = booking.date;
+      const slotTime = booking.time;
+
+      const availableSlot = barber.availableSlots.find(
+        (slot) => slot.date.toISOString() === new Date(slotDate).toISOString()
+      );
+
+      if (availableSlot) {
+        const timeSlot = availableSlot.times.find((time) => time.time === slotTime);
+        if (timeSlot) {
+          timeSlot.isBooked = false;
+        }
+      }
+
+      // Save the updated barber document
+      await barber.save();
+
+    // Find the customer who has this booking
+    const customer = await Customer.findOne({
+      "bookings.slotId": slotId
+    });
+
+    if (customer) {
+      // Find the specific booking in the customer's profile
+      const customerBooking = customer.bookings.find((b) => b.slotId.equals(slotId));
+
+      if (customerBooking) {
+        // Update the booking status to "cancelled"
+        customerBooking.status = "cancelled";
+        await customer.save();
+      }
+    }
+
+    res.status(200).json({ message: "Appointment cancelled successfully." });
+    } catch (error: any) {
+      console.error("Error in cancelAppointment:", error);
+    res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  }
+
 }
 
 export default AppointmentController;

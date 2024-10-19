@@ -87,6 +87,10 @@ const BarberSchema: Schema<IBarber> = new Schema(
           type: String,
           required: true,
         },
+        slotId: {
+          type: Schema.Types.ObjectId,
+          required: true,
+        },
         status: {
           type: String,
           enum: ["pending", "completed", "cancelled"],

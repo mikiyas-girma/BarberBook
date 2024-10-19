@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 
 export interface IAppointment {
   barberId: Types.ObjectId;
+  slotId: Types.ObjectId;
   date: Date;
   time: string;
   status: "pending" | "completed" | "cancelled";

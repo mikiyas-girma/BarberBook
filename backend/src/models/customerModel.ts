@@ -28,6 +28,10 @@ const CustomerSchema: Schema<ICustomer> = new Schema(
           ref: "Barber", // Reference to the Barber model
           required: true,
         },
+        slotId: {
+          type: Schema.Types.ObjectId,
+          required: true,
+        },
         date: {
           type: Date,
           required: true,
