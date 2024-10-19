@@ -50,7 +50,6 @@ class BarberController {
     const Id = req.user._id;
     const barberId = Id.toString();
     const { availableSlots } = req.body;
-
     // Validate the incoming data
     if (!Array.isArray(availableSlots) || availableSlots.length === 0) {
       return next(
@@ -61,11 +60,29 @@ class BarberController {
       );
     }
 
+    // Validate each slot structure
+    for (const slot of availableSlots) {
+      if (!slot.date || !Array.isArray(slot.times) || slot.times.length === 0) {
+        return next(
+          errorHandler(400, "Each slot must have a date and an array of times")
+        );
+      }
+      for (const time of slot.times) {
+        if (!time.time) {
+          return next(
+            errorHandler(400, "Each time slot must have a time value")
+          );
+        }
+      }
+    }
+
     try {
+      // Call service to update the barber's available slots
       const updatedSlots = await BarberService.addAvailabilitySlots(
         barberId,
         availableSlots
       );
+
       res.status(201).json({
         message: "Availability slots added successfully",
         availableSlots: updatedSlots,

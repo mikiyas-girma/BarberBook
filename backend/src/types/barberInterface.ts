@@ -1,29 +1,27 @@
-import { Schema, Types, Document } from 'mongoose';
+import { Types } from "mongoose";
 
-// Define an interface for Barber
-export interface IBarber extends Document {
+export interface ITimeSlot {
+  time: string;
+  isBooked: boolean;
+  _id?: Types.ObjectId;
+}
+
+export interface IAvailableSlot {
+  date: Date;
+  times: ITimeSlot[];
+}
+
+export interface IBarber {
   _id: Types.ObjectId;
   name: string;
   email: string;
   password: string;
   businessName: string;
-  phoneNumber?: string;
-  portfolio?: string[];
-  availableSlots: Array<{
-    date: Date;
-    time: string;
-    isBooked: boolean;
-  }>;
-  subscriptionStatus: 'active' | 'inactive' | 'trial';
-  subscriptionPlan: 'monthly' | 'yearly' | null;
-  trialEndDate: Date | null;
+  phoneNumber: string;
+  portfolio: string[];
+  availableSlots: IAvailableSlot[];
+  subscriptionStatus: "active" | "inactive" | "trial";
+  subscriptionPlan: "monthly" | "yearly" | null;
+  trialEndDate: Date;
   subscriptionEndDate: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IAvailabilitySlot {
-  date: Date;
-  time: string;
-  isBooked: boolean;
 }

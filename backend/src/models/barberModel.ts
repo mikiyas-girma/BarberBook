@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import { IBarber } from "../types/barberInterface.js";
+
 // Define the schema for Barber
 const BarberSchema: Schema<IBarber> = new Schema(
   {
@@ -27,7 +28,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
     },
     portfolio: [
       {
-        type: String, // URLs to images showcasing the barber's work
+        type: String,
       },
     ],
     availableSlots: [
@@ -36,18 +37,22 @@ const BarberSchema: Schema<IBarber> = new Schema(
           type: Date,
           required: true,
         },
-        time: {
-          type: String,
-          required: true,
-        },
-        isBooked: {
-          type: Boolean,
-          default: false,
-        },
-        _id: {
-          type: Schema.Types.ObjectId,
-          auto: true,
-        }
+        times: [
+          {
+            time: {
+              type: String, // e.g., "09:00 AM", "01:30 PM"
+              required: true,
+            },
+            isBooked: {
+              type: Boolean,
+              default: false,
+            },
+            _id: {
+              type: Schema.Types.ObjectId,
+              auto: true,
+            },
+          },
+        ],
       },
     ],
     subscriptionStatus: {
@@ -65,7 +70,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
       default: () => {
         const currentDate = new Date();
         return new Date(currentDate.setDate(currentDate.getDate() + 30)); // Trial period is 30 days
-      }
+      },
     },
     subscriptionEndDate: {
       type: Date,
