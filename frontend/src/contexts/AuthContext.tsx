@@ -35,7 +35,6 @@ interface AuthContextValue {
   updateUserProfile: (newData: Partial<User>) => Promise<void>;
   updateUserPassword: (passwords: { oldPassword: string; newPassword: string }) => Promise<void>;
   deleteUser: () => Promise<void>;
-  saveLocation: (lat: number, lng: number) => Promise<void>;
   
 };
 
@@ -57,7 +56,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const response = await axiosForApiCall.get('/auth/check');
         const normalizedUser = { ...response.data.user, id: response.data.user._id || response.data.user.id };
-        console.log("Normalized user after check: ", normalizedUser)
         dispatch(signInSuccess(normalizedUser));
       } catch (err: any) {
         // Handle different types of errors
@@ -160,16 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             'An error occured while deleting your account, please retry'
           );
         }
-      },
-      saveLocation: async (lat: number, lng: number) => {
-        try {
-          await axiosForApiCall.post('/user/save-location', { lat, lng });
-          console.log( lat, lng);
-        } catch (err) {
-          console.log(err);
-          throw new Error('An error occurred while saving your location, please retry');
-        }
-      },      
+      },  
     };
   }, [currentUser, dispatch, isAuthenticated, loading, error]);
 

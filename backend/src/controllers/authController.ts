@@ -78,7 +78,7 @@ class AuthController {
       }
 
       //   generate token
-      const token = jwt.sign({ userId: user._id },  process.env.JWT_SECRET!);
+      const token = jwt.sign({ id: user._id },  process.env.JWT_SECRET!);
 
       Logger.info(`User ${user.email} signed up`);
       res.cookie("access_token", token, {
@@ -88,14 +88,11 @@ class AuthController {
         secure: process.env.NODE_ENV === "production",
       });
 
+      const { password: pass, ...theuser } = user.toObject();
+
       res.status(201).json({
         message: `Signup successful for ${isBarber ? "Barber" : "Customer"}`,
-        user: {
-          name: user.name,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          isBarber,
-        },
+        ...theuser
       });
     } catch (error) {
       Logger.error(`Error signing up: ${error}`);

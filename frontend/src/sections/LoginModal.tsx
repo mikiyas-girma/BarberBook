@@ -1,9 +1,7 @@
 import React, { useState, FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "@/utils/axiosInstance";
 import useAuth from "@/hooks/useAuth";
 
 interface LoginModalProps {

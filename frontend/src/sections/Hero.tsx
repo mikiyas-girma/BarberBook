@@ -55,7 +55,6 @@ export default function Hero() {
               <button
                 className="booking-btn h-12 text-white bg-[#AF8447]"
                 onClick={() => {
-                  console.log("Login button clicked!"); // Checking if button is clickable
                   openLoginModal();
                 }}
               >
