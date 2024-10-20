@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { errorHandler } from "../../utils/errorHandler.js";
 import { Barber } from "../../models/barberModel.js";
+import { v2 as cloudinary } from 'cloudinary';
+import Logger from "../../lib/logger.js";
 
 class PortfolioController {
   static async uploadPortfolios(
@@ -60,6 +62,50 @@ class PortfolioController {
       next(errorHandler(500, `Internal Server Error: ${error}`));
     }
   }
+
+  static async deletePortfolioImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const barberId = req.user._id;
+    const { imageUrl } = req.body;
+  
+    try {
+      // Find the barber by ID
+      const barber = await Barber.findById(barberId);
+      if (!barber) {
+        return next(errorHandler(404, "Barber not found."));
+      }
+  
+      // Check if the image exists in the portfolio
+      const imageIndex = barber.portfolio.findIndex((url) => url === imageUrl);
+      if (imageIndex === -1) {
+        return next(errorHandler(404, "Image not found in portfolio."));
+      }
+  
+      // Extract Cloudinary public ID from the image URL
+      const publicId = imageUrl.split("/").pop()?.split(".")[0];
+      if (!publicId) {
+        return next(errorHandler(400, "Invalid image URL."));
+      }
+  
+      // Delete the image from Cloudinary
+      await cloudinary.uploader.destroy(`barberbook/${publicId}`).then((result) => {
+        if (result.result === "not found") {
+          Logger.error("Image not found in Cloudinary.");
+        }    
+      });
+  
+      // Remove the image from the barber's portfolio
+      barber.portfolio.splice(imageIndex, 1);
+      await barber.save();
+  
+      res.status(200).json({
+        message: "Image deleted successfully",
+        updatedPortfolio: barber.portfolio,
+      });
+    } catch (error) {
+      next(errorHandler(500, `Internal Server Error: ${error}`));
+    }
+  }
+
 }
 
 export default PortfolioController;

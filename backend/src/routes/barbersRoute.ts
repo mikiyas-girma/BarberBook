@@ -25,6 +25,9 @@ router.post('/portfolios', authMiddleware,
     isBarber, upload.array("images", 10), 
     uploadToCloudinary, 
     PortfolioController.uploadPortfolios);
+
+// routes for deleting portfolios
+router.delete('/portfolios/delete', authMiddleware, isBarber, PortfolioController.deletePortfolioImage);
     
 // routes for getting barber by id
 router.get('/:id', BarberController.getBarberById);
