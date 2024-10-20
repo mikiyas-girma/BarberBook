@@ -122,9 +122,9 @@ export default function RegistrationPage() {
   }
 
   return (
-    <div className="font-space_grotesk min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 flex items-center justify-center">
+    <div className="mt-2 font-space_grotesk bg-gradient-to-br from-orange-50 via-white to-green-50 flex items-center justify-center">
       <div className="w-full max-w-6xl bg-white mx-auto">
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row ">
           {/* Left side - Dark section */}
           <div className="bg-gray-900 text-white p-12 md:w-1/2 space-y-8">
             <h2 className="text-4xl font-bold mb-2">BarberBook</h2>

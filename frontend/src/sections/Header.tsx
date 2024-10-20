@@ -90,7 +90,7 @@ const Header = () => {
               CONTACT
             </a>
             <a href="/booking" className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground">
-              BOOKING
+              BOOKINGS
             </a>
           </div>
         </div>
