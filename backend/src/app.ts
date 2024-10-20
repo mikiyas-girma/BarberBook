@@ -9,8 +9,26 @@ import cookieParser from 'cookie-parser';
 import morganMiddleware from './middlewares/morgan.middleware.js';
 import appointmentRoutes from './routes/appointmentRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
+import cors from 'cors';
 
 const app: Application = express();
+
+// Define the list of allowed origins
+const allowedOrigins = ['http://localhost:3000', 'https://barberbook.mikegirma.tech'];
+
+// CORS Configuration
+app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        // If the origin isn't in the allowed list, return an error
+        return callback(new Error('Not allowed by CORS'));
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  }));
+  
 
 // Middleware
 app.use(helmet());
