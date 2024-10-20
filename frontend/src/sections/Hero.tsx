@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Header from "./Header";
 import LoginModal from "@/sections/LoginModal";
+import { useModal } from "@/contexts/modalContext";
 
 const images = [
   //   "/images/barbershop1.jpg?height=1080&width=1920",
@@ -10,6 +11,7 @@ const images = [
 
 export default function Hero() {
   const [currentImage, setCurrentImage] = useState(0);
+  const { isLoginOpen, openLoginModal, closeLoginModal } = useModal();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,17 +20,7 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, []);
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const openLoginModal = () => {
-    console.log("Opening modal...");
-    setIsLoginOpen(true);
-  };
-
-  const closeLoginModal = () => {
-    console.log("Closing modal...");
-    setIsLoginOpen(false);
-  };
 
   return (
     <div className="min-h-screen flex flex-col relative">

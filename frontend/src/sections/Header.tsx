@@ -1,12 +1,56 @@
 import { Link } from "react-router-dom";
 import { LuMapPin, LuPhone, LuMail } from "react-icons/lu";
 import "@/styles/mystyles.css";
+import useAuth from "@/hooks/useAuth";
+import { useModal } from "@/contexts/modalContext";
 
-interface HeaderProps {
-  name?: string;
-}
+const Header = () => {
+  const { user } = useAuth();
 
-const Header = ({ name }: HeaderProps) => {
+  const isLoggedIn = user?.isAuthenticated;
+
+  const userRole = user?.data?.role;
+
+  const { openLoginModal } = useModal();
+
+  const renderNavLink = () => {
+    if (!isLoggedIn) {
+      return (
+        <a
+          className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground"
+          onClick={(e) => {
+            e.preventDefault();
+            openLoginModal();
+          }}
+        >
+          SIGN IN
+        </a>
+      );
+    }
+
+    if (userRole === "barber") {
+      return (
+        <a
+          href="/dashboard"
+          className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground"
+        >
+          DASHBOARD
+        </a>
+      );
+    }
+
+    if (userRole === "customer") {
+      return (
+        <a
+          href="/booking"
+          className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground"
+        >
+          BOOKINGS
+        </a>
+      );
+    }
+  };
+
   const handleSmoothScroll = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     duration: number
@@ -42,73 +86,55 @@ const Header = ({ name }: HeaderProps) => {
   };
   return (
     <>
-    <div className="bg-transparent">
-      <header className="text-white font-chakra bg-transparent">
-        <div
-          className="mx-auto px-4 py-4 flex items-center
+      <div className="bg-transparent">
+        <header className="text-white font-chakra bg-transparent">
+          <div
+            className="mx-auto px-4 py-4 flex items-center
              border-b-2 border-white border-opacity-25"
-        >
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center">
-              <LuMapPin className="h-4 w-4 mr-2" />
-              <span className="">4 Kilo Street, Addis Ababa</span>
-            </div>
-            <div className="flex items-center">
-              <LuPhone className="h-4 w-4 mr-2" />
-              <span className="">(251) 923-421-123</span>
-            </div>
-            <div className="flex items-center">
-              <LuMail className="h-4 w-4 mr-2" />
-              <span className="">contact@barberbook.com</span>
+          >
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center">
+                <LuMapPin className="h-4 w-4 mr-2" />
+                <span className="">4 Kilo Street, Addis Ababa</span>
+              </div>
+              <div className="flex items-center">
+                <LuPhone className="h-4 w-4 mr-2" />
+                <span className="">(251) 923-421-123</span>
+              </div>
+              <div className="flex items-center">
+                <LuMail className="h-4 w-4 mr-2" />
+                <span className="">contact@barberbook.com</span>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
-      <nav className="bg-transparent text-white font-merriweather">
-        <div className="px-4 py-4 mx-12 flex justify-between items-center">
-          <Link to="/" className="text-2xl font-bold">
-            <span>
-              <img
-                src="/logo.svg"
-                alt="barberbook logo"
-                className="h-10 w-10"
-              />
-            </span>{" "}
-            BARBERBOOK
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="text-white hover:text-gray-300">
-              HOME
+        </header>
+        <nav className="bg-transparent text-white font-merriweather">
+          <div className="px-4 py-4 mx-12 flex justify-between items-center">
+            <Link to="/" className="text-2xl font-bold">
+              <span>
+                <img
+                  src="/logo.svg"
+                  alt="barberbook logo"
+                  className="h-10 w-10"
+                />
+              </span>{" "}
+              BARBERBOOK
             </Link>
-            <a
-              href="#about"
-              className="text-white hover:text-gray-300"
-              onClick={(e) => handleSmoothScroll(e, 1000)}
-            >
-              ABOUT US
-            </a>
-            <Link to="/barbers" className="text-white hover:text-gray-300">
-              BARBERS
-            </Link>
-            <a href="#footer" className="text-white hover:text-gray-300">
-              CONTACT
-            </a>
-            {name ? (
-              <span className="text-white">{name}</span>
-            ) : (
-              <a href="/signup" className="text-white hover:text-gray-300">
-                SIGN UP
+            <div className="flex items-center space-x-4">
+              <a
+                href="#about"
+                className="text-white hover:text-gray-300"
+                onClick={(e) => handleSmoothScroll(e, 1000)}
+              >
+                ABOUT
               </a>
-            )}
-            <a href="/dashboard" className="text-white hover:text-gray-300">
-              DASHBOARD
-            </a>
-            <a href="/booking" className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground">
-              BOOKINGS
-            </a>
+              <Link to="/barbers" className="text-white hover:text-gray-300">
+                BARBERS
+              </Link>
+              {renderNavLink()}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
       </div>
     </>
   );
