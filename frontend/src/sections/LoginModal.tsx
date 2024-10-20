@@ -12,7 +12,7 @@ interface LoginModalProps {
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
-    const [username, setUsername] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
 
@@ -23,14 +23,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         e.preventDefault();
 
         try {
-            const response = await axiosInstance.post("/login/", {
-                username,
+            const response = await axiosInstance.post("/auth/login/", {
+                email,
                 password,
             });
             console.log("Login successful");
             setError("");
             dispatch(setUserLogin(response.data.user));
-            navigate("/home");
+            navigate("/");
             onClose(); // Close modal on success
         } catch (error) {
             console.error("Login failed", error);
@@ -47,11 +47,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 <h2 className="text-center text-lg font-bold text-white">Login</h2>
                 <form onSubmit={handleLogin}>
                     <Input
-                        name="username"
+                        name="email"
                         type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                         className="my-2"
                     />

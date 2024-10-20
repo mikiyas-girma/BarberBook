@@ -4,10 +4,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
+import useAuth from '@/hooks/useAuth'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '@/redux/store'
+import { userActions } from '@/redux/user/userSlice'
+import { useNavigate } from 'react-router-dom'
 
 export default function RegistrationPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [accountType, setAccountType] = useState<'barber' | 'customer'>('barber')
+  const [termsAccepted, setTermsAccepted] = useState(false)
 
   // Merchant (Barber) fields
   const [barberName, setBarberName] = useState('')
@@ -23,6 +29,44 @@ export default function RegistrationPage() {
   const [customerPhone, setCustomerPhone] = useState('')
   const [customerPassword, setCustomerPassword] = useState('')
 
+  const { signUp } = useAuth()
+  const dispatch = useDispatch<AppDispatch>()
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!termsAccepted) {
+      alert('Please accept the terms and conditions')
+      return
+    }
+
+    const userData = accountType === 'barber' 
+      ? {
+          name: barberName,
+          businessName,
+          companyLocation,
+          email: businessEmail,
+          phoneNumber: barberPhone,
+          password: barberPassword,
+        }
+      : {
+          name: customerName,
+          email: customerEmail,
+          phoneNumber: customerPhone,
+          password: customerPassword,
+        }
+
+    try {
+      dispatch(userActions.signUpStart())
+      await signUp(userData)
+      dispatch(userActions.signUpSuccess())
+      navigate('/login') // Redirect to login page after successful signup
+    } catch (error) {
+      dispatch(userActions.signUpFailure(error))
+      alert('Signup failed. Please try again.')
+    }
+  }
+
   const renderForm = () => {
     if (accountType === 'barber') {
       return (
@@ -35,6 +79,7 @@ export default function RegistrationPage() {
               placeholder="eg. Abebe Balcha" 
               value={barberName}
               onChange={(e) => setBarberName(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -45,6 +90,7 @@ export default function RegistrationPage() {
               placeholder="Your business name" 
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -55,6 +101,7 @@ export default function RegistrationPage() {
               placeholder="Complete location to your barber shop" 
               value={companyLocation}
               onChange={(e) => setCompanyLocation(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -66,6 +113,7 @@ export default function RegistrationPage() {
               placeholder="Enter your email" 
               value={businessEmail}
               onChange={(e) => setBusinessEmail(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -77,6 +125,7 @@ export default function RegistrationPage() {
               placeholder="Enter your phone number" 
               value={barberPhone}
               onChange={(e) => setBarberPhone(e.target.value)}
+              required
             />
           </div>
         </>
@@ -92,6 +141,7 @@ export default function RegistrationPage() {
               placeholder="eg. Abebe Balcha" 
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -103,6 +153,7 @@ export default function RegistrationPage() {
               placeholder="Enter your email" 
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
+              required
             />
           </div>
           <div>
@@ -114,6 +165,7 @@ export default function RegistrationPage() {
               placeholder="Enter your phone number" 
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
+              required
             />
           </div>
         </>
@@ -164,7 +216,7 @@ export default function RegistrationPage() {
                 Customer
               </Button>
             </div>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               {renderForm()}
               <div className="relative">
                 <Label htmlFor="password">Password</Label>
@@ -175,6 +227,7 @@ export default function RegistrationPage() {
                   placeholder="Enter your password" 
                   value={accountType === 'barber' ? barberPassword : customerPassword}
                   onChange={(e) => accountType === 'barber' ? setBarberPassword(e.target.value) : setCustomerPassword(e.target.value)}
+                  required
                 />
                 <button
                   type="button"
@@ -185,7 +238,12 @@ export default function RegistrationPage() {
                 </button>
               </div>
               <div className="flex items-center space-x-4 mb-2">
-                <Checkbox id="terms" className='border border-blue' />
+                <Checkbox 
+                  id="terms" 
+                  className='border border-blue'
+                  checked={termsAccepted}
+                  onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                />
                 <label
                   htmlFor="terms"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

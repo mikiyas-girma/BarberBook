@@ -2,75 +2,123 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "./axiosInstance";
 
-interface User {
-    id: string;
-    username: string;
-    email: string;
-    name: string;
-    bio: string;
-    phone: string;
-    github: string;
-    image: string;
-    skills: string[];
-    team_count: number;
+interface Customer {
+  _id: string;
+  email: string;
+  name: string;
+  phoneNumber: string;
+  bookings: string[];
 }
+
+interface Barber {
+  _id: string;
+  email: string;
+  name: string;
+  phoneNumber: string;
+  portfolio?: string[];
+  availableSlots?: string[];
+  bookings?: string[];
+  businessName?: string;
+}
+
+type User = Customer | Barber;
 
 interface UserState {
-    loggeduser: User | null;
-    users: User[];
-    user: User | null;
+  loggedUser: User | null;
+  users: (Customer | Barber)[];
+  user: User | null;
 }
 
-const storedUser = localStorage.getItem('user');
+const storedUser = localStorage.getItem("user");
 const initialState: UserState = {
-    loggeduser: storedUser ? JSON.parse(storedUser) : null,
-    users: [],
-    user: null,
+  loggedUser: storedUser ? JSON.parse(storedUser) : null,
+  users: [],
+  user: null,
 };
 
-export const fetchUserById = createAsyncThunk<User, string>('/users/fetchUserById', async (id) => {
+// Fetch user by ID
+export const fetchUserById = createAsyncThunk<User, string>(
+  "/users/fetchUserById",
+  async (id) => {
     const response = await axiosInstance.get(`/users/${id}`);
     return response.data;
-});
+  }
+);
 
-export const fetchUserByusername = createAsyncThunk<User, string>('/users/fetchUserByusername', async (username) => {
+// Fetch user by username
+export const fetchUserByUsername = createAsyncThunk<User, string>(
+  "/users/fetchUserByUsername",
+  async (username) => {
     const response = await axiosInstance.get(`/users/${username}`);
     return response.data;
-});
+  }
+);
 
-export const fetchUsers = createAsyncThunk<User[]>('/users/fetchUsers', async () => {
-    const response = await axiosInstance.get('/users');
+// Fetch all users
+export const fetchUsers = createAsyncThunk<(Customer | Barber)[], void>(
+  "/users/fetchUsers",
+  async () => {
+    const response = await axiosInstance.get("/users");
     return response.data;
-});
+  }
+);
 
 const userSlice = createSlice({
-    name: 'user',
-    initialState,
-    reducers: {
-        setUserLogin: (state, action: PayloadAction<User>) => {
-            const { id, username, email, name, bio, phone, github, image, skills, team_count } = action.payload;
-            const userData = { id, username, email, name, skills, team_count, bio, phone, github, image };
+  name: "user",
+  initialState,
+  reducers: {
+    // Set login for the user (either Barber or Customer)
+    setUserLogin: (state, action: PayloadAction<User>) => {
+      console.log("Login successful", action.payload);
+      state.loggedUser = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload));
+    },
 
-            state.loggeduser = userData;
-            localStorage.setItem('user', JSON.stringify(userData));
-        },
-        setSignOut: (state) => {
-            state.loggeduser = null;
-            localStorage.removeItem('user');
-        },
-        setUser: (state, action: PayloadAction<User>) => {
-            state.user = action.payload;
+    // Sign out user
+    setSignOut: (state) => {
+      state.loggedUser = null;
+      localStorage.removeItem("user");
+    },
+
+    // Set a specific user (could be from fetched data)
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    // Handle fetching user by ID
+    builder.addCase(
+      fetchUserById.fulfilled,
+      (state, action: PayloadAction<User>) => {
+        const user = action.payload;
+
+        // Check if the user is a Barber or a Customer based on available fields
+        if ("portfolio" in user || "availableSlots" in user) {
+          // It's a Barber
+          state.users.push(user as Barber);
+        } else {
+          // It's a Customer
+          state.users.push(user as Customer);
         }
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchUserById.fulfilled, (state, action: PayloadAction<User>) => {
-                state.users.push(action.payload);
-            })
-            .addCase(fetchUserByusername.fulfilled, (state, action: PayloadAction<User>) => {
-                state.user = action.payload;
-            });
-    },
+      }
+    );
+
+    // Handle fetching user by username
+    builder.addCase(
+      fetchUserByUsername.fulfilled,
+      (state, action: PayloadAction<User>) => {
+        state.user = action.payload;
+      }
+    );
+
+    // Handle fetching all users
+    builder.addCase(
+      fetchUsers.fulfilled,
+      (state, action: PayloadAction<(Customer | Barber)[]>) => {
+        state.users = action.payload;
+      }
+    );
+  },
 });
 
 export const { setUserLogin, setSignOut, setUser } = userSlice.actions;

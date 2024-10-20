@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import { LuMapPin, LuPhone, LuMail } from "react-icons/lu";
 import "@/styles/mystyles.css";
 
-const Header = () => {
+interface HeaderProps {
+  name?: string;
+}
+
+const Header = ({ name }: HeaderProps) => {
   const handleSmoothScroll = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
     duration: number
@@ -89,9 +93,13 @@ const Header = () => {
             <a href="#footer" className="text-white hover:text-gray-300">
               CONTACT
             </a>
-            <a href="/signup" className="text-white hover:text-gray-300">
-              SIGNUP
-            </a>
+            {name ? (
+              <span className="text-white">{name}</span>
+            ) : (
+              <a href="/signup" className="text-white hover:text-gray-300">
+                SIGN UP
+              </a>
+            )}
             <a href="/dashboard" className="text-white hover:text-gray-300">
               DASHBOARD
             </a>

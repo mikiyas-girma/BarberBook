@@ -8,7 +8,8 @@ import {
 import routes from './routes'
 import Layout from './pages/Layout'
 import Page404 from '@/pages/Page404'
-import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeProvider } from '@/components/theme-provider';
+import { AuthProvider } from './contexts/AuthContext'
 
 function App() {
 
@@ -27,9 +28,11 @@ function App() {
     )
 
     return (
-        <ThemeProvider defaultTheme="dark" storageKey='vite-ui-theme'>
-            <RouterProvider router={router} />
-        </ThemeProvider>
+        <AuthProvider>
+            <ThemeProvider defaultTheme="dark" storageKey='vite-ui-theme'>
+                <RouterProvider router={router} />
+            </ThemeProvider>
+        </AuthProvider>
     )
 }
 

@@ -14,7 +14,7 @@ import cors from 'cors';
 const app: Application = express();
 
 // Define the list of allowed origins
-const allowedOrigins = ['http://localhost:3000', 'https://barberbook.mikegirma.tech'];
+const allowedOrigins = ['http://localhost:5173', 'https://barberbook.mikegirma.tech'];
 
 // CORS Configuration
 app.use(cors({

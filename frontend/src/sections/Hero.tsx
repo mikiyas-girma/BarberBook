@@ -8,7 +8,11 @@ const images = [
   "/images/3.jpg?height=1080&width=1920",
 ];
 
-export default function Hero() {
+interface HeroProps {
+  name?: string;
+}
+
+export default function Hero({ name }: HeroProps) {
   const [currentImage, setCurrentImage] = useState(0);
 
   useEffect(() => {
@@ -48,7 +52,7 @@ export default function Hero() {
       ))}
       <div className="inset-0 bg-black bg-opacity-0" />
       <div className="z-10 flex flex-col min-h-screen">
-        <Header />
+        <Header name={name} />
         <main className="font-chakra flex-grow flex items-center ml-12">
 
 
@@ -57,7 +61,14 @@ export default function Hero() {
             <h1 className="text-6xl font-bold mb-4 text-[#F3C623] font-space_grotesk">Experience the <span className="text-[#F3C623]">traditional</span><br />barbershop feel</h1>
             <p className="text-2xl mb-8 font-space_grotesk">Professional care to maintain your perfect look</p>
             <div className="space-x-4 font-space_grotesk py-10">
-        <button
+        { name ? (
+            <button
+                className="booking-btn h-12 text-white bg-[#AF8447]"
+            >
+                See Our Barbers
+            </button>
+        ) : (
+            <button
                 className="booking-btn h-12 text-white bg-[#AF8447]"
                 onClick={() => {
                     console.log("Login button clicked!"); // Checking if button is clickable
@@ -66,6 +77,7 @@ export default function Hero() {
             >
                 Be Our Customer
             </button>
+        )}
               <div className="booking-btn h-12 text-[#493628] bg-white hover:text-gray-800">
                 BOOK NOW
               </div>
