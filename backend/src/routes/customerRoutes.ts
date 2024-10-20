@@ -4,6 +4,8 @@ import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
+// routes for updating customer profile
+router.put('/update-profile', authMiddleware, CustomerController.updateProfile);
 
 // Route for non-logged-in users to search for their bookings
 router.get('/search-bookings', CustomerController.searchBookings);

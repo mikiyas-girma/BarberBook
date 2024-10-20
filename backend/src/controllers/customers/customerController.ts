@@ -1,6 +1,7 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { Barber } from "../../models/barberModel.js";
 import { Customer } from "../../models/customerModel.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 
 class CustomerController {
   // Search bookings by phone or email
@@ -105,6 +106,54 @@ class CustomerController {
         message: "Server error",
         error: error.message,
       });
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    const userId = req.user._id;
+    const { name, email, phoneNumber } = req.body;
+  
+    try {
+      // Find the user by ID
+      const user = await Customer.findById(userId);
+      if (!user) {
+        return next(errorHandler(404, "User not found."));
+      }
+  
+      // Update only if the fields are provided
+      if (name) {
+        user.name = name;
+      }
+      if (email) {
+        // Optional: validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          return next(errorHandler(400, "Invalid email format."));
+        }
+        user.email = email;
+      }
+      if (phoneNumber) {
+        // Optional: validate phone number length
+        if (phoneNumber.length < 10 || phoneNumber.length > 15) {
+          return next(errorHandler(400, "Invalid phone number."));
+        }
+        user.phoneNumber = phoneNumber;
+      }
+  
+      // Save updated user profile
+      await user.save();
+  
+      // Respond with success and updated user data
+      res.status(200).json({
+        message: "Profile updated successfully",
+        user: {
+          name: user.name,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+        },
+      });
+    } catch (error) {
+      next(errorHandler(500, `Internal Server Error: ${error}`));
     }
   }
 
