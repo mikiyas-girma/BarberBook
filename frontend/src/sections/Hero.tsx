@@ -64,11 +64,8 @@ export default function Hero() {
                     openLoginModal();
                 }}
             >
-                LOGIN
+                Be Our Customer
             </button>
-              <div className="booking-btn h-12 bg-[#AF8447]">
-                SEE MORE
-              </div>
               <div className="booking-btn h-12 text-[#493628] bg-white hover:text-gray-800">
                 BOOK NOW
               </div>

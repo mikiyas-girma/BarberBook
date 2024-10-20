@@ -68,6 +68,19 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                     <Button type="submit" className="mt-4 w-full">
                         Login
                     </Button>
+                    <p className="text-center text-white mt-4">
+                        Don't have an account?{" "}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                onClose();
+                                navigate("/signup");
+                            }}
+                            className="text-blue-500 underline"
+                        >
+                            Sign up
+                        </button>
+                    </p>
                 </form>
             </div>
         </div>
