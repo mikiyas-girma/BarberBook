@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createContext, ReactNode, useEffect, useMemo } from 'react';
+import { createContext, ReactNode, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, persistor, RootState } from '@/redux/store';
 import axiosForApiCall  from '@/utils/axiosInstance';
@@ -21,12 +21,14 @@ const {
 } = userActions;
 
 interface AuthContextValue {
+
   user: {
     isAuthenticated: boolean;
     isProcessing: boolean;
     processFail: boolean;
     data: User | null;
   };
+
   signUp: (userData: SignUpFormData) => Promise<void>;
   signIn: (credentials: SignInFormData) => Promise<void>;
   signOut: () => Promise<void>;
@@ -34,6 +36,7 @@ interface AuthContextValue {
   updateUserPassword: (passwords: { oldPassword: string; newPassword: string }) => Promise<void>;
   deleteUser: () => Promise<void>;
   saveLocation: (lat: number, lng: number) => Promise<void>;
+  
 };
 
 
@@ -45,6 +48,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     RootState,
     UserState
   >((state) => state.user);
+
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      dispatch(signInStart());
+      try {
+        const response = await axiosForApiCall.get('/auth/check');
+        const normalizedUser = { ...response.data.user, id: response.data.user._id || response.data.user.id };
+        console.log("Normalized user after check: ", normalizedUser)
+        dispatch(signInSuccess(normalizedUser));
+      } catch (err: any) {
+        // Handle different types of errors
+        if (err.response && err.response.status === 401) {
+          // Unauthorized: Token is invalid or expired
+          dispatch(signOutSuccess()); // Clear the user state
+        } else {
+          // Other errors (network issues, server errors, etc.)
+          dispatch(signInFailure(err));
+        }
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+
+    checkAuthStatus();
+  }, [dispatch]);
 
   const authContextValue = useMemo(() => {
     return {
@@ -142,6 +172,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       },      
     };
   }, [currentUser, dispatch, isAuthenticated, loading, error]);
+
+  if (!isInitialized) {
+    // You can return a loading component here if you want
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={authContextValue}>

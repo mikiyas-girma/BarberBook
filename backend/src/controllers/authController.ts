@@ -138,7 +138,7 @@ class AuthController {
 
       const { password: pass, ...theuser } = user.toObject();
 
-      res.status(200).json({ message: "Login successful", user: theuser });
+      res.status(200).json({ message: "Login successful", ...theuser });
     } catch (error) {
       next(errorHandler(500, "Server error during login."));
     }

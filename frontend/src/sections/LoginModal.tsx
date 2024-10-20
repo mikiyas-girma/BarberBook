@@ -2,39 +2,35 @@ import React, { useState, FormEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
-import { setUserLogin } from "@/utils/userSlice";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/utils/axiosInstance";
+import useAuth from "@/hooks/useAuth";
 
 interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
+
 const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string>("");
 
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { signIn, user } = useAuth();
 
     const handleLogin = async (e: FormEvent) => {
         e.preventDefault();
-
+        setError("");
         try {
-            const response = await axiosInstance.post("/auth/login/", {
-                email,
-                password,
-            });
+            await signIn({ email, password });
             console.log("Login successful");
-            setError("");
-            dispatch(setUserLogin(response.data.user));
-            if (response.data.user.role === "barber") {
+            if (user.data?.role === "barber") {
                 navigate("/dashboard");
-            } else if (response.data.user.role === "customer") {
+              } else if (user.data?.role === "customer") {
                 navigate("/barbers");
-            }
+              }
             onClose(); // Close modal on success
         } catch (error) {
             console.error("Login failed", error);

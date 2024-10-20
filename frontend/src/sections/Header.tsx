@@ -10,6 +10,7 @@ const Header = () => {
   const isLoggedIn = user?.isAuthenticated;
 
   const userRole = user?.data?.role;
+  console.log("user in headers: ", user.data?.role);
 
   const { openLoginModal } = useModal();
 
