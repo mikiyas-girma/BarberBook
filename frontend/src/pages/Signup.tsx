@@ -42,6 +42,7 @@ export default function RegistrationPage() {
 
     const userData = accountType === 'barber' 
       ? {
+          isBarber: true,
           name: barberName,
           businessName,
           companyLocation,
