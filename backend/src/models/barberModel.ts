@@ -119,6 +119,7 @@ const BarberSchema: Schema<IBarber> = new Schema(
       type: Date,
       default: null,
     },
+    role: { type: String, default: "barber" },
   },
   { timestamps: true }
 );

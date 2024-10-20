@@ -60,7 +60,11 @@ export default function RegistrationPage() {
       dispatch(userActions.signUpStart())
       await signUp(userData)
       dispatch(userActions.signUpSuccess())
-      navigate('/login') // Redirect to login page after successful signup
+    if (accountType === 'barber') {
+      navigate('/dashboard')
+    } else {
+      navigate('/barbers')
+    }
     } catch (error) {
       dispatch(userActions.signUpFailure(error))
       alert('Signup failed. Please try again.')

@@ -15,4 +15,5 @@ export interface ICustomer {
   password: string;
   phoneNumber?: string;
   bookings: IAppointment[];
+  role: "customer";
 }

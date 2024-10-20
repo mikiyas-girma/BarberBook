@@ -5,6 +5,8 @@ import { Customer } from "../models/customerModel.js";
 import { Barber } from "../models/barberModel.js";
 import Logger from "../lib/logger.js";
 import jwt from "jsonwebtoken";
+import { IBarber } from "../types/barberInterface.js";
+import { ICustomer } from "../types/customerInterface.js";
 
 class AuthController {
   // Signup for Customer or Barber
@@ -141,6 +143,45 @@ class AuthController {
       next(errorHandler(500, "Server error during login."));
     }
   }
+
+    // Check if the user is logged in
+    static async checkAuth(req: Request, res: Response, next: NextFunction) {
+        const token = await req.cookies?.access_token;
+        if (!token) {
+            return next(errorHandler(401, 'Unauthorized please login'));
+          }
+          return jwt.verify(
+            token,
+            process.env.JWT_SECRET!,
+            async (err: any, decoded: any) => {
+              if (err) {
+                Logger.error(`error in jwt verify ${err}`)
+                console.error('Authentification error: unknow error');
+                return next(errorHandler(401, 'Cannot authentify user'));
+              }
+              try {
+                let barber = await Barber.findOne({ _id: decoded.id }).select('-password');
+                if (barber) {
+                  const barberObject: IBarber = barber.toObject();
+                  return res.status(200).json({ user: barberObject });
+                } else {
+                  let customer = await Customer.findOne({ _id: decoded.id }).select('-password');
+                  if (!customer) {
+                    return next(errorHandler(401, 'Unknown user or invalid auth token'));
+                  }
+                  const customerObject: ICustomer = customer.toObject();
+                  return res.status(200).json({ user: customerObject})
+                }
+                return next();
+              } catch (error) {
+                return next(errorHandler(401, 'Cannot authentify user'));
+              }
+            }
+          );      
+    }
+
 }
+
+  
 
 export default AuthController;

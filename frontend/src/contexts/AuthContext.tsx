@@ -57,8 +57,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signUp: async (userData: SignInFormData) => {
         dispatch(signUpStart());
         try {
-          await axiosForApiCall.post('/auth/signup', userData);
+          const response = await axiosForApiCall.post('/auth/signup', userData);
           dispatch(signUpSuccess());
+        const normalizedUser = { ...response.data, id: response.data._id || response.data.id };
+        dispatch(signInSuccess(normalizedUser));
         } catch (err) {
           console.error(err);
           dispatch(signUpFailure(err));
@@ -69,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         dispatch(signInStart());
         try {
           const response = await axiosForApiCall.post(
-            '/auth/signin',
+            '/auth/login',
             credentials
           );
           const normalizedUser = {...response.data, id: response.data._id || response.data.id};
@@ -140,30 +142,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       },      
     };
   }, [currentUser, dispatch, isAuthenticated, loading, error]);
-
-  useEffect(() => {
-    const checkAuthState = async () => {
-      console.log("dispatching signin start")
-      dispatch(signInStart());
-      try {
-        const response = await axiosForApiCall.get('/auth/check');
-        const normalizedUser = {...response.data, id: response.data._id || response.data.id};
-        console.log(`${axiosForApiCall}/auth/check`)
-        if (response.data) {
-          dispatch(signInSuccess(normalizedUser));
-        } else {
-          dispatch(signInFailure('No user found'));
-          throw new Error('No user found');
-        }
-      } catch (err) {
-        console.log("nopppp")
-        dispatch(signInFailure(err));
-        throw new Error('No user found');
-      }
-    };
-
-    checkAuthState();
-  }, [dispatch]);
 
   return (
     <AuthContext.Provider value={authContextValue}>

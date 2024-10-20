@@ -40,4 +40,5 @@ export interface IBarber {
   subscriptionPlan: "monthly" | "yearly" | null;
   trialEndDate: Date;
   subscriptionEndDate: Date | null;
+  role: string;
 }

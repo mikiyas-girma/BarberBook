@@ -47,6 +47,7 @@ const CustomerSchema: Schema<ICustomer> = new Schema(
         },
       },
     ],
+    role: { type: String, default: "customer" },
   },
   { timestamps: true }
 );

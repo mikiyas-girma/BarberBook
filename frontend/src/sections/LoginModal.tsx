@@ -30,7 +30,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             console.log("Login successful");
             setError("");
             dispatch(setUserLogin(response.data.user));
-            navigate("/");
+            if (response.data.user.role === "barber") {
+                navigate("/dashboard");
+            } else if (response.data.user.role === "customer") {
+                navigate("/barbers");
+            }
             onClose(); // Close modal on success
         } catch (error) {
             console.error("Login failed", error);
