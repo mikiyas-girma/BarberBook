@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import {  Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -7,7 +7,119 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 export default function RegistrationPage() {
   const [showPassword, setShowPassword] = useState(false)
-  const [accountType, setAccountType] = useState<'merchant' | 'agent'>('merchant')
+  const [accountType, setAccountType] = useState<'barber' | 'customer'>('barber')
+
+  // Merchant (Barber) fields
+  const [barberName, setBarberName] = useState('')
+  const [businessName, setBusinessName] = useState('')
+  const [companyLocation, setCompanyLocation] = useState('')
+  const [businessEmail, setBusinessEmail] = useState('')
+  const [barberPhone, setBarberPhone] = useState('')
+  const [barberPassword, setBarberPassword] = useState('')
+
+  // Customer (Agent) fields
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
+  const [customerPassword, setCustomerPassword] = useState('')
+
+  const renderForm = () => {
+    if (accountType === 'barber') {
+      return (
+        <>
+          <div>
+            <Label htmlFor="fullName">Your Full Name</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="fullName" 
+              placeholder="eg. Abebe Balcha" 
+              value={barberName}
+              onChange={(e) => setBarberName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="businessName">Your Business Name</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="businessName" 
+              placeholder="Your business name" 
+              value={businessName}
+              onChange={(e) => setBusinessName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="companyLocation">Where is your company?</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="companyLocation" 
+              placeholder="Complete location to your barber shop" 
+              value={companyLocation}
+              onChange={(e) => setCompanyLocation(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="businessEmail">Business E-mail</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="businessEmail" 
+              type="email" 
+              placeholder="Enter your email" 
+              value={businessEmail}
+              onChange={(e) => setBusinessEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="phoneNumber">Phone number</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="phoneNumber" 
+              type="tel" 
+              placeholder="Enter your phone number" 
+              value={barberPhone}
+              onChange={(e) => setBarberPhone(e.target.value)}
+            />
+          </div>
+        </>
+      )
+    } else {
+      return (
+        <>
+          <div>
+            <Label htmlFor="customerName">Your Full Name</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="customerName" 
+              placeholder="eg. Abebe Balcha" 
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="customerEmail">E-mail</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="customerEmail" 
+              type="email" 
+              placeholder="Enter your email" 
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="customerPhone">Phone number</Label>
+            <Input 
+              className="bg-white rounded-none border-amber-700" 
+              id="customerPhone" 
+              type="tel" 
+              placeholder="Enter your phone number" 
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+            />
+          </div>
+        </>
+      )
+    }
+  }
 
   return (
     <div className="font-space_grotesk min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 flex items-center justify-center">
@@ -17,15 +129,13 @@ export default function RegistrationPage() {
           <div className="bg-gray-900 text-white p-12 md:w-1/2 space-y-8">
             <h2 className="text-4xl font-bold mb-2">BarberBook</h2>
             <div className="bg-gray-800 rounded-xl p-6 mb-8">
-              <p className="mb-4">
-                <h3 className="text-2xl font-semibold mb-4">Welcome to BarberBook</h3>
-                <p className="text-gray-400">
-                    BarberBook is your ultimate solution for managing and growing your barber business. 
-                    Track appointments, manage clients, and analyze your business performance all in one place.
-                </p>
-                 </p>
+              <h3 className="text-2xl font-semibold mb-4">Welcome to BarberBook</h3>
+              <p className="text-gray-400 mb-4">
+                BarberBook is your ultimate solution for managing and growing your barber business. 
+                Track appointments, manage clients, and analyze your business performance all in one place.
+              </p>
               <div className="flex items-center">
-                <img src="/images/image4.jpg?height=40&width=40" alt="User" className="w-10 h-10 rounded-full mr-4" />
+                <img src="/api/placeholder/40/40" alt="User" className="w-10 h-10 rounded-full mr-4" />
                 <div>
                   <p className="font-semibold">Mikiyas Girma</p>
                   <p className="text-sm text-gray-400">Founder [BarberBook plc]</p>
@@ -42,45 +152,29 @@ export default function RegistrationPage() {
             <h2 className="text-3xl font-bold mb-8">Create an account</h2>
             <div className="flex space-x-4 mb-6">
               <Button 
-                className={`w-1/2 border-2 ${accountType === 'merchant' ? 'border-amber-500' : 'border-gray-300'}`}
-                onClick={() => setAccountType('merchant')}
+                className={`w-1/2 border-2 ${accountType === 'barber' ? 'border-amber-500' : 'border-gray-300'}`}
+                onClick={() => setAccountType('barber')}
               >
                 Barber
               </Button>
               <Button 
-                className={`w-1/2 border-2  ${accountType === 'agent' ? 'border-amber-500' : 'border-gray-300'}`}
-                onClick={() => setAccountType('agent')}
+                className={`w-1/2 border-2  ${accountType === 'customer' ? 'border-amber-500' : 'border-gray-300'}`}
+                onClick={() => setAccountType('customer')}
               >
                 Customer
               </Button>
             </div>
-            <form className="space-y-2">
-              <div>
-                <Label htmlFor="fullName">Your Full Name</Label>
-                <Input className="bg-white rounded-none border-amber-700" id="fullName" placeholder="eg. Abebe Balcha" />
-              </div>
-              <div>
-                <Label htmlFor="businessName">Your Business Name</Label>
-                <Input className="bg-white rounded-none border-amber-700" id="businessName" placeholder="Your business name" />
-              </div>
-              <div>
-                <Label htmlFor="companyLocation">Where is your company?</Label>
-                <Input className="bg-white rounded-none border-amber-700" id="companyLocation" placeholder="Complete location to your barber shop" />
-              </div>
-              <div>
-                <Label htmlFor="businessEmail">Business E-mail</Label>
-                <Input className="bg-white rounded-none border-amber-700" id="businessEmail" type="email" placeholder="Enter your email" />
-              </div>
-              <div>
-                <Label htmlFor="phoneNumber">Phone number</Label>
-                <Input className="bg-white rounded-none border-amber-700" id="phoneNumber" type="tel" placeholder="Enter your phone number" />
-              </div>
+            <form className="space-y-4">
+              {renderForm()}
               <div className="relative">
                 <Label htmlFor="password">Password</Label>
-                <Input className="bg-white rounded-none border-amber-700" 
+                <Input 
+                  className="bg-white rounded-none border-amber-700" 
                   id="password" 
                   type={showPassword ? "text" : "password"} 
                   placeholder="Enter your password" 
+                  value={accountType === 'barber' ? barberPassword : customerPassword}
+                  onChange={(e) => accountType === 'barber' ? setBarberPassword(e.target.value) : setCustomerPassword(e.target.value)}
                 />
                 <button
                   type="button"
@@ -94,12 +188,12 @@ export default function RegistrationPage() {
                 <Checkbox id="terms" className='border border-blue' />
                 <label
                   htmlFor="terms"
-                  className="bordertext-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   I accept the <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
                 </label>
               </div>
-              <Button type="submit" className="rounded-none border-amber-700 bg-amber-500 hover:bg-orange-600">
+              <Button type="submit" className="w-full rounded-none border-amber-700 bg-amber-500 hover:bg-orange-600">
                 Create an Account
               </Button>
             </form>
