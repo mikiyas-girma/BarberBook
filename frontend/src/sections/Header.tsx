@@ -89,6 +89,12 @@ const Header = () => {
             <a href="#footer" className="text-white hover:text-gray-300">
               CONTACT
             </a>
+            <a href="/signup" className="text-white hover:text-gray-300">
+              SIGNUP
+            </a>
+            <a href="/dashboard" className="text-white hover:text-gray-300">
+              DASHBOARD
+            </a>
             <a href="/booking" className="h-11 booking-btn border-2 border-white hover:bg-[#AF8447] hover:text-accent-foreground">
               BOOKINGS
             </a>
