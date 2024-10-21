@@ -2,9 +2,12 @@
 
 Welcome to BarberBook Web App repository! This project is a web application that is built for barbers and customers to book appointments. The application is built using ReactJS, ExpressJS, MongoDB. The frontend is built using ReactJS with TypeScript and Vite for build tooling. The backend is built using ExpressJS with TypeScript, MongoDB for the database.
 
-## [Link to Video here](https://www.youtube.com/watch?v=Q1Q1Q1Q1Q1Q)
+## [API Docs are here](https://documenter.getpostman.com/view/35992601/2sAXxY2Th7)
 
-<!-- ## API Docs here -->
+
+## [Link to Video here](https://youtu.be/Bl4t3WP9fJ0)
+
+
 
 
 ## Table of Contents
