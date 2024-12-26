@@ -5,10 +5,6 @@ Welcome to BarberBook Web App repository! This project is a web application that
 ## [API Docs are here](https://documenter.getpostman.com/view/35992601/2sAXxY2Th7)
 
 
-## [Link to Video here](https://youtu.be/Bl4t3WP9fJ0)
-
-
-
 
 ## Table of Contents
 
